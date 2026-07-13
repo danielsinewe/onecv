@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createInterface } from "node:readline/promises";
 import { spawnSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { stdin, stdout } from "node:process";
 import { bizforwardAdapter } from "./adapters/bizforward.js";
 import type { PlatformAdapter } from "./adapters/types.js";
@@ -94,8 +94,32 @@ function codexDesktopLink(prompt: string): string {
   return `codex://new?${params.toString()}`;
 }
 
+interface CodexRuntime {
+  command: string;
+  prefix: string[];
+}
+
+let activeCodexRuntime: CodexRuntime | undefined;
+
+function resolveCodexRuntime(): CodexRuntime {
+  if (activeCodexRuntime) return activeCodexRuntime;
+  const appRuntime = "/Applications/ChatGPT.app/Contents/Resources/codex";
+  const candidates: CodexRuntime[] = [
+    ...(process.env.CODEX_BIN ? [{ command: process.env.CODEX_BIN, prefix: [] }] : []),
+    ...(process.platform === "darwin" && existsSync(appRuntime) ? [{ command: appRuntime, prefix: [] }] : []),
+    { command: "codex", prefix: [] },
+    { command: process.platform === "win32" ? "npx.cmd" : "npx", prefix: ["--yes", "@openai/codex@latest"] }
+  ];
+  for (const candidate of candidates) {
+    const result = spawnSync(candidate.command, [...candidate.prefix, "--version"], { encoding: "utf8", stdio: "pipe" });
+    if (result.status === 0) return activeCodexRuntime = candidate;
+  }
+  return candidates.at(-1)!;
+}
+
 function codex(args: string[], options: { inherit?: boolean } = {}): ReturnType<typeof spawnSync> {
-  return spawnSync("codex", args, {
+  const runtime = resolveCodexRuntime();
+  return spawnSync(runtime.command, [...runtime.prefix, ...args], {
     encoding: "utf8",
     stdio: options.inherit ? "inherit" : "pipe"
   });
