@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import { createInterface } from "node:readline/promises";
 import { spawnSync } from "node:child_process";
+import { mkdirSync } from "node:fs";
 import { stdin, stdout } from "node:process";
 import { bizforwardAdapter } from "./adapters/bizforward.js";
 import type { PlatformAdapter } from "./adapters/types.js";
 import { openBrowser } from "./browser.js";
-import { createProfile, defaultProfilePath, loadProfile, type Profile } from "./profile.js";
+import { createProfile, defaultProfilePath, loadProfile, oneCvHome, type Profile } from "./profile.js";
 
 const adapters: Record<string, PlatformAdapter> = { bizforward: bizforwardAdapter };
 
@@ -85,7 +86,12 @@ function linkedinProfileUrl(value: string | undefined): string {
 }
 
 function onboardingPrompt(linkedinUrl: string): string {
-  return `Use the 1CV skill to import my visible LinkedIn profile from ${linkedinUrl}. Let me handle login or verification in my browser. Show me the extracted profile for review, ask only for essential missing information, create my local 1CV, then prepare BizForward without submitting anything.`;
+  return `Use the 1CV skill to import my visible LinkedIn profile from ${linkedinUrl} with the Chrome connection available in this Codex desktop task. Let me handle login or verification in Chrome. Show me the extracted profile for review, ask only for essential missing information, create my local 1CV, then prepare BizForward without submitting anything.`;
+}
+
+function codexDesktopLink(prompt: string): string {
+  const params = new URLSearchParams({ prompt, path: oneCvHome() });
+  return `codex://new?${params.toString()}`;
 }
 
 function codex(args: string[], options: { inherit?: boolean } = {}): ReturnType<typeof spawnSync> {
@@ -105,10 +111,24 @@ function requireSuccessfulCodex(result: ReturnType<typeof spawnSync>, action: st
   }
 }
 
+function openCodexDesktop(link: string): void {
+  const command = process.platform === "darwin" ? "open" : process.platform === "win32" ? "explorer.exe" : "xdg-open";
+  const args = process.platform === "darwin" ? ["-b", "com.openai.codex", link] : [link];
+  const result = spawnSync(command, args, { encoding: "utf8", stdio: "pipe" });
+  if (result.error && "code" in result.error && result.error.code === "ENOENT") {
+    throw new Error("The Codex desktop app is required. Install it from https://openai.com/codex/get-started/ and run this command again.");
+  }
+  if (result.status !== 0) {
+    const detail = String(result.stderr || result.stdout || "").trim();
+    throw new Error(`Could not open the Codex desktop app${detail ? `: ${detail}` : "."}`);
+  }
+}
+
 function startWithCodex(linkedinUrl: string, printOnly: boolean): void {
   const prompt = onboardingPrompt(linkedinUrl);
+  const link = codexDesktopLink(prompt);
   if (printOnly) {
-    console.log(prompt);
+    console.log(link);
     return;
   }
 
@@ -127,8 +147,10 @@ function startWithCodex(linkedinUrl: string, printOnly: boolean): void {
     requireSuccessfulCodex(codex(["plugin", "add", "1cv@1cv"]), "1CV plugin install");
   }
 
-  console.log("Opening 1CV in Codex…");
-  requireSuccessfulCodex(codex([prompt], { inherit: true }), "Codex launch");
+  mkdirSync(oneCvHome(), { recursive: true, mode: 0o700 });
+  console.log("Opening 1CV in the Codex app…");
+  openCodexDesktop(link);
+  console.log("Review the prefilled request in Codex, then send it when you are ready.");
 }
 
 function profileLink(url: string): Profile["identity"]["links"] {

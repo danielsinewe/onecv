@@ -26,6 +26,8 @@ npx @danielsinewe/1cv apply bizforward
 
 Or install it globally with `npm install -g @danielsinewe/1cv`.
 
+`start` installs or updates the 1CV plugin and opens a new Codex desktop task in `~/.1cv` with the LinkedIn request prefilled. Using the desktop task keeps its Chrome connection available for the import.
+
 `init` guides a new user through the minimum profile fields and writes them to the local profile file. No repository checkout or manual JSON editing is required.
 
 `apply` opens Chrome, fills the form, and stops for review. Submission is explicit: `1cv apply bizforward --consent --submit`.

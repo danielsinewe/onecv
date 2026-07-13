@@ -42,7 +42,7 @@ codex plugin marketplace add danielsinewe/onecv
 codex plugin add 1cv@1cv
 ```
 
-The public onboarding site lives in [`web/`](web/). It validates LinkedIn profile URLs locally in the browser and generates the single `1cv start` command; it does not submit the URL to a server.
+The command installs or updates the plugin, then opens a new Codex desktop task in `~/.1cv` with the request prefilled. This keeps the Chrome connection in the same desktop environment as the task. The public onboarding site lives in [`web/`](web/); it validates LinkedIn profile URLs locally and does not submit the URL to a server.
 
 ## Adapter contract
 
