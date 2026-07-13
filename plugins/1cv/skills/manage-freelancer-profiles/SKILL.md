@@ -9,7 +9,7 @@ Use the 1CV CLI as the deterministic layer. Keep personal data and browser sessi
 
 ## Workflow
 
-1. Check that `1cv` is available with `command -v 1cv`. If absent during beta, use `npx 1cv@next` for every command. From the source repository only, build with `npm --prefix cli install && npm --prefix cli run build` and invoke `node cli/dist/cli.js`.
+1. Check that `1cv` is available with `command -v 1cv`. If absent during beta, use `npx @danielsinewe/1cv@next` for every command. From the source repository only, build with `npm --prefix cli install && npm --prefix cli run build` and invoke `node cli/dist/cli.js`.
 2. Create a profile only when it does not exist: `1cv init`. Never overwrite one without explicit approval.
 3. Validate with `1cv profile`. Read [profile-schema.md](references/profile-schema.md) only when editing or generating profile JSON.
 4. List supported adapters with `1cv platforms`.

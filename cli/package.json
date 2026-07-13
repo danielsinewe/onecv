@@ -1,5 +1,5 @@
 {
-  "name": "1cv",
+  "name": "@danielsinewe/1cv",
   "version": "0.1.0-beta.0",
   "description": "Local-first freelancer profile manager and browser automation CLI",
   "type": "module",

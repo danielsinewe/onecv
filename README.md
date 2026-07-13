@@ -26,9 +26,9 @@ The default action fills and pauses. Only `1cv apply bizforward --consent --subm
 During the public beta, a new user starts with no repository checkout:
 
 ```bash
-npx 1cv@next init
-npx 1cv@next plan bizforward
-npx 1cv@next apply bizforward
+npx @danielsinewe/1cv@next init
+npx @danielsinewe/1cv@next plan bizforward
+npx @danielsinewe/1cv@next apply bizforward
 ```
 
 Install the Codex plugin from the public repository:
