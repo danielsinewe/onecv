@@ -52,7 +52,7 @@ form?.addEventListener("submit", (event) => {
   }
   error.textContent = "";
   input.removeAttribute("aria-invalid");
-  output.textContent = `npx --yes @danielsinewe/1cv@next start ${linkedin}`;
+  output.textContent = `npx --yes @danielsinewe/1cv start ${linkedin}`;
   result.hidden = false;
   result.scrollIntoView({ behavior: "smooth", block: "nearest" });
   copyButton.focus({ preventScroll: true });

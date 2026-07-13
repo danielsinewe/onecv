@@ -18,13 +18,13 @@ npm link
 During the public beta, start without cloning the repository:
 
 ```bash
-npx @danielsinewe/1cv@next start https://www.linkedin.com/in/your-profile
-npx @danielsinewe/1cv@next init
-npx @danielsinewe/1cv@next plan bizforward
-npx @danielsinewe/1cv@next apply bizforward
+npx @danielsinewe/1cv start https://www.linkedin.com/in/your-profile
+npx @danielsinewe/1cv init
+npx @danielsinewe/1cv plan bizforward
+npx @danielsinewe/1cv apply bizforward
 ```
 
-Or install it globally with `npm install -g @danielsinewe/1cv@next`.
+Or install it globally with `npm install -g @danielsinewe/1cv`.
 
 `init` guides a new user through the minimum profile fields and writes them to the local profile file. No repository checkout or manual JSON editing is required.
 
