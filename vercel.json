@@ -5,6 +5,11 @@
   "buildCommand": "npm --prefix web run build",
   "outputDirectory": "web/dist",
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/register", "destination": "/", "permanent": true },
+    { "source": "/terms-of-use", "destination": "/terms/", "permanent": true },
+    { "source": "/privacy-policy", "destination": "/privacy/", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/start", "destination": "/" }
   ],
