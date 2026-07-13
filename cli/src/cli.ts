@@ -57,7 +57,7 @@ function help(): void {
 Usage:
   1cv start <linkedin-url> [--print]
   1cv init --name name --email email --specialty specialty
-           [--linkedin url] [--profile path] [--force]
+           [--profile-url url] [--profile path] [--force]
   1cv profile [--profile path] [--json]
   1cv platforms [--json]
   1cv plan <platform> [--profile path] [--json]
@@ -87,7 +87,7 @@ function linkedinProfileUrl(value: string | undefined): string {
 }
 
 function onboardingPrompt(linkedinUrl: string): string {
-  return `Use the 1CV skill to import my visible LinkedIn profile from ${linkedinUrl} with the Chrome connection available in this Codex desktop task. Let me handle login or verification in Chrome. Show me the extracted profile for review, ask only for essential missing information, create my local 1CV, then prepare BizForward without submitting anything.`;
+  return `Use the 1CV skill in this Codex desktop task to import my visible LinkedIn profile from ${linkedinUrl} with Codex's in-app browser. Keep browser work inside Codex and let me handle login, verification, or cookie prompts. Show me the extracted profile for review, ask only for essential missing information, create my local 1CV, then prepare BizForward without submitting anything.`;
 }
 
 function codexDesktopLink(prompt: string): string {
@@ -301,16 +301,23 @@ async function main(): Promise<void> {
     const submit = args.flags.has("submit");
     if (submit && !consent) throw new Error("--submit requires --consent. Consent is never inferred.");
 
+    const headless = args.flags.has("headless");
     const plan = await adapter.plan(profile);
     if (plan.warnings.length) printPlan(plan);
     const session = await openBrowser({
       cdpUrl: textFlag(args, "cdp-url"),
-      headless: args.flags.has("headless"),
+      headless,
       userDataDir: textFlag(args, "browser-profile")
     });
     try {
       const page = await session.context.newPage();
-      await adapter.fill(page, profile, { consent, submit });
+      await adapter.fill(page, profile, {
+        consent,
+        submit,
+        onManualAction: !headless && stdin.isTTY
+          ? async (message) => console.log(message)
+          : undefined
+      });
       if (submit) {
         await adapter.submit(page);
         console.log(await adapter.verify(page));

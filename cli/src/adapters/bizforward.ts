@@ -19,6 +19,22 @@ async function fillAndVerify(page: Page, name: string, value: string): Promise<v
   throw new Error(`Browser verification failed for ${name}.`);
 }
 
+export async function waitForCookieOverlay(page: Page, options: ApplyOptions): Promise<void> {
+  const save = page.getByRole("button", { name: "Speichern", exact: true });
+  if (!await save.isVisible().catch(() => false)) return;
+
+  if (!options.onManualAction) {
+    throw new Error("Choose Speichern in BizForward's cookie window, then run 1cv apply again.");
+  }
+
+  await options.onManualAction("Choose Speichern in BizForward's cookie window. 1CV will continue.");
+  try {
+    await save.waitFor({ state: "hidden", timeout: 120_000 });
+  } catch {
+    throw new Error("BizForward's cookie window is still open. Close it and run 1cv apply again.");
+  }
+}
+
 export const bizforwardAdapter: PlatformAdapter = {
   id: "bizforward",
   name: "BizForward",
@@ -60,14 +76,7 @@ export const bizforwardAdapter: PlatformAdapter = {
 
     await page.goto(this.url, { waitUntil: "domcontentloaded" });
 
-    const cookieDialog = page.getByRole("dialog");
-    if (await cookieDialog.isVisible().catch(() => false)) {
-      const save = cookieDialog.getByRole("button", { name: "Speichern", exact: true });
-      if (await save.isVisible().catch(() => false)) {
-        await save.click();
-        await cookieDialog.waitFor({ state: "hidden" }).catch(() => undefined);
-      }
-    }
+    await waitForCookieOverlay(page, options);
 
     await fillAndVerify(page, "Name", profile.identity.fullName);
     await fillAndVerify(page, "E-Mail", profile.identity.email);

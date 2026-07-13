@@ -17,6 +17,7 @@ export interface ApplicationPlan {
 export interface ApplyOptions {
   consent: boolean;
   submit: boolean;
+  onManualAction?: (message: string) => Promise<void>;
 }
 
 export interface PlatformAdapter {
