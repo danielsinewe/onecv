@@ -8,3 +8,4 @@ dist/
 output/
 web/dist/
 web/node_modules/
+.env.local
