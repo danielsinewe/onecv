@@ -4,6 +4,7 @@ dist/
 *.tgz
 .playwright-cli/
 .vercel/
+.wrangler/
 output/
 web/dist/
 web/node_modules/
