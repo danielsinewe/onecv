@@ -22,6 +22,7 @@ npm link
 1cv init
 1cv plan bizforward
 1cv apply bizforward
+1cv status bizforward
 ```
 
 The default action fills and pauses. Only `1cv apply bizforward --consent --submit` submits.
@@ -33,6 +34,7 @@ npx @danielsinewe/1cv start https://www.linkedin.com/in/your-profile
 npx @danielsinewe/1cv init
 npx @danielsinewe/1cv plan bizforward
 npx @danielsinewe/1cv apply bizforward
+npx @danielsinewe/1cv status bizforward
 ```
 
 Install the Codex plugin from the public repository:
@@ -44,8 +46,10 @@ codex plugin add 1cv@1cv
 
 The command installs or updates the plugin, then opens a new Codex desktop task in `~/.1cv` with the request prefilled. Browser work continues in Codex's in-app browser. The public onboarding site lives in [`web/`](web/); it validates LinkedIn profile URLs locally and does not submit the URL to a server.
 
+Use `1cv edit` to update the local profile without editing JSON. After a verified fill, `1cv status bizforward` shows whether anything was submitted and `1cv diff bizforward` shows exactly what changed since that fill. This history stays beside the profile in `~/.1cv/platforms/`.
+
 ## Adapter contract
 
 Every marketplace integration must support a preview plan, use the local profile, run through a user-owned browser context, and verify the visible result. Adapters must not store credentials or bypass platform security.
 
-Next adapters should target the marketplaces users actually maintain most often—Malt, freelancermap, and Freelancer.com—after inspecting their current signed-in profile forms.
+The current product focus is a complete BizForward workflow before adding another marketplace.

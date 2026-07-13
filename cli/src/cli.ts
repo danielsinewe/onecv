@@ -6,7 +6,8 @@ import { stdin, stdout } from "node:process";
 import { bizforwardAdapter } from "./adapters/bizforward.js";
 import type { PlatformAdapter } from "./adapters/types.js";
 import { openBrowser } from "./browser.js";
-import { createProfile, defaultProfilePath, loadProfile, oneCvHome, type Profile } from "./profile.js";
+import { createProfile, defaultProfilePath, loadProfile, oneCvHome, preferredProfileUrl, saveProfile, type Profile } from "./profile.js";
+import { diffPlan, loadPlatformState, recordPrepared, recordSubmitted } from "./state.js";
 
 const adapters: Record<string, PlatformAdapter> = { bizforward: bizforwardAdapter };
 
@@ -59,8 +60,12 @@ Usage:
   1cv init --name name --email email --specialty specialty
            [--profile-url url] [--profile path] [--force]
   1cv profile [--profile path] [--json]
+  1cv edit [--name name] [--email email] [--specialty specialty]
+           [--profile-url url] [--cv path | --clear-cv] [--profile path]
   1cv platforms [--json]
   1cv plan <platform> [--profile path] [--json]
+  1cv diff <platform> [--profile path] [--json]
+  1cv status <platform> [--profile path] [--json]
   1cv apply <platform> [--profile path] [--consent] [--submit]
                            [--browser-profile path | --cdp-url url] [--headless]
 
@@ -236,6 +241,54 @@ async function onboardingProfile(args: ParsedArgs): Promise<Profile> {
   }
 }
 
+async function editableAnswer(
+  readline: ReturnType<typeof createInterface>,
+  label: string,
+  current: string,
+  supplied?: string
+): Promise<string> {
+  if (supplied !== undefined) return supplied.trim();
+  if (!stdin.isTTY) return current;
+  const answer = (await readline.question(`${label} [${current || "none"}]: `)).trim();
+  return answer || current;
+}
+
+async function editedProfile(args: ParsedArgs, current: Profile): Promise<Profile> {
+  const readline = createInterface({ input: stdin, output: stdout });
+  try {
+    const fullName = await editableAnswer(readline, "Name", current.identity.fullName, textFlag(args, "name"));
+    const email = await editableAnswer(readline, "Email", current.identity.email, textFlag(args, "email"));
+    const specialty = await editableAnswer(
+      readline,
+      "Specialty",
+      current.professional.specialties.join(", "),
+      textFlag(args, "specialty")
+    );
+    const currentUrl = preferredProfileUrl(current) ?? "";
+    const publicProfile = await editableAnswer(readline, "Public profile", currentUrl, textFlag(args, "profile-url"));
+    const currentCv = current.assets.cv ?? "";
+    const cv = args.flags.has("clear-cv")
+      ? ""
+      : await editableAnswer(readline, "CV file", currentCv, textFlag(args, "cv"));
+    return {
+      ...current,
+      identity: {
+        ...current.identity,
+        fullName,
+        email,
+        links: publicProfile === currentUrl ? current.identity.links : profileLink(publicProfile)
+      },
+      professional: {
+        ...current.professional,
+        specialties: specialty.split(",").map((value) => value.trim()).filter(Boolean)
+      },
+      assets: cv ? { ...current.assets, cv } : {}
+    };
+  } finally {
+    readline.close();
+  }
+}
+
 function printPlan(plan: Awaited<ReturnType<PlatformAdapter["plan"]>>): void {
   console.log(`${plan.platform}\n${plan.url}`);
   for (const field of plan.fields) console.log(`${field.required ? "*" : " "} ${field.field}: ${field.value || "—"}`);
@@ -279,6 +332,21 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (command === "edit") {
+    if (args.flags.has("clear-cv") && textFlag(args, "cv") !== undefined) {
+      throw new Error("Use either --cv or --clear-cv, not both.");
+    }
+    const current = await loadProfile(profilePath);
+    const edited = await editedProfile(args, current);
+    if (JSON.stringify(current) === JSON.stringify(edited)) {
+      console.log("No profile changes.");
+      return;
+    }
+    const path = await saveProfile(profilePath, edited);
+    console.log(`Updated ${path}`);
+    return;
+  }
+
   if (command === "platforms") {
     const platforms = Object.values(adapters).map(({ id, name, url }) => ({ id, name, url }));
     if (args.flags.has("json")) console.log(JSON.stringify(platforms, null, 2));
@@ -291,6 +359,35 @@ async function main(): Promise<void> {
     if (args.flags.has("json")) console.log(JSON.stringify(plan, null, 2));
     else printPlan(plan);
     if (plan.fields.some((field) => field.required && !field.value)) process.exitCode = 2;
+    return;
+  }
+
+  if (command === "diff" || command === "status") {
+    const adapter = adapterFor(target);
+    const plan = await adapter.plan(await loadProfile(profilePath));
+    const state = await loadPlatformState(adapter.id, profilePath);
+    const changes = diffPlan(plan, state);
+    if (args.flags.has("json")) {
+      console.log(JSON.stringify({ platform: adapter.name, state: state ?? null, changes }, null, 2));
+      return;
+    }
+    if (command === "diff") {
+      if (!state?.lastPrepared) console.log(`${adapter.name}: not prepared yet.`);
+      else if (!changes.length) console.log(`${adapter.name}: no changes since ${state.lastPrepared.at}.`);
+      else {
+        console.log(`${adapter.name}: ${changes.length} changed field${changes.length === 1 ? "" : "s"}.`);
+        for (const change of changes) console.log(`${change.field}: ${change.before || "—"} → ${change.after || "—"}`);
+      }
+      return;
+    }
+    if (!state?.lastPrepared) console.log(`${adapter.name}: not prepared.`);
+    else if (state.lastSubmitted?.at === state.lastPrepared.at) {
+      console.log(`${adapter.name}: submitted ${state.lastSubmitted.at}.\n${state.lastSubmitted.confirmation}`);
+    } else {
+      console.log(`${adapter.name}: prepared ${state.lastPrepared.at}. Nothing submitted from this fill.`);
+      if (state.lastSubmitted) console.log(`Previous submission: ${state.lastSubmitted.at}.`);
+    }
+    if (changes.length) console.log(`${changes.length} profile change${changes.length === 1 ? "" : "s"} since the last fill.`);
     return;
   }
 
@@ -311,9 +408,12 @@ async function main(): Promise<void> {
     try {
       const page = await session.context.newPage();
       await adapter.fill(page, profile, { consent, submit });
+      await recordPrepared(adapter.id, profilePath, plan);
       if (submit) {
         await adapter.submit(page);
-        console.log(await adapter.verify(page));
+        const confirmation = await adapter.verify(page);
+        await recordSubmitted(adapter.id, profilePath, plan, confirmation);
+        console.log(confirmation);
       } else {
         console.log("Form filled. Nothing has been submitted.");
         await waitForReview();

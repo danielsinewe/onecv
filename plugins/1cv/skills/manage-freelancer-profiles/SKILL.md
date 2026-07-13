@@ -12,12 +12,12 @@ Use the 1CV CLI as the deterministic layer. Keep personal data and browser sessi
 1. Check that `1cv` is available with `command -v 1cv`. If absent during beta, use `npx @danielsinewe/1cv` for every command. From the source repository only, build with `npm --prefix cli install && npm --prefix cli run build` and invoke `node cli/dist/cli.js`.
 2. When the user provides their own LinkedIn profile URL in a Codex desktop task, use Codex's in-app browser and open the exact URL. Let the user handle login, MFA, CAPTCHA, or verification. Read only profile information visibly available to that user, including name, headline, location, about text, skills, languages, and public links. Never use a remote scraper or extract browser credentials.
 3. Show the extracted profile as a concise review before saving it. Ask only for required information LinkedIn does not provide, especially email. Do not invent missing facts.
-4. Create a profile only when it does not exist: `1cv init`. Never overwrite one without explicit approval. After approval, use the reviewed LinkedIn information to complete the local profile according to [profile-schema.md](references/profile-schema.md).
-5. Validate with `1cv profile`. Read [profile-schema.md](references/profile-schema.md) only when editing or generating profile JSON.
+4. Create a profile only when it does not exist: `1cv init`. Never overwrite one without explicit approval. Use `1cv edit` for normal updates so the user does not need to edit JSON. Read [profile-schema.md](references/profile-schema.md) only when the full schema is needed.
+5. Validate with `1cv profile`.
 6. List supported adapters with `1cv platforms`.
-7. Always preview a platform mapping with `1cv plan <platform>` before opening a browser.
-8. Run `1cv apply <platform>` to fill the form and stop for human review.
-9. Add `--consent --submit` only when the user explicitly authorizes that exact submission. Never infer legal consent.
+7. Check `1cv status <platform>` and `1cv diff <platform>`, then preview with `1cv plan <platform>` before opening a browser.
+8. Run `1cv apply <platform>` to fill the form and stop for human review. A verified fill updates only local platform state.
+9. Add `--consent --submit` only when the user explicitly authorizes that exact submission. Never infer legal consent. Record submission state only after visible confirmation.
 
 ## Browser and authentication
 
@@ -28,6 +28,7 @@ Use the 1CV CLI as the deterministic layer. Keep personal data and browser sessi
 - Let the CLI automatically keep only BizForward's necessary cookies before filling. Do not ask the user to handle the cookie window.
 - Treat a fill as incomplete until the browser shows the expected values.
 - Treat a submission as complete only after the platform's confirmation is visible.
+- Do not treat an earlier submission as proof that a newer fill was submitted; use `1cv status`.
 
 ## Platform handling
 

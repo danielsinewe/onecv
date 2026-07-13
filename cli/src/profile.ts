@@ -1,4 +1,4 @@
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { z } from "zod";
@@ -99,8 +99,25 @@ export async function createProfile(
     }
   }
   await mkdir(dirname(target), { recursive: true, mode: 0o700 });
+  await writeProfile(target, profile);
+  return target;
+}
+
+async function writeProfile(target: string, profile: Profile): Promise<void> {
   const validated = ProfileSchema.parse(profile);
-  await writeFile(target, `${JSON.stringify(validated, null, 2)}\n`, { mode: 0o600 });
+  const temporary = `${target}.${process.pid}.tmp`;
+  await mkdir(dirname(target), { recursive: true, mode: 0o700 });
+  try {
+    await writeFile(temporary, `${JSON.stringify(validated, null, 2)}\n`, { mode: 0o600 });
+    await rename(temporary, target);
+  } finally {
+    await rm(temporary, { force: true }).catch(() => undefined);
+  }
+}
+
+export async function saveProfile(path: string, profile: Profile): Promise<string> {
+  const target = expandHome(path);
+  await writeProfile(target, profile);
   return target;
 }
 
