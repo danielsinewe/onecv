@@ -1,0 +1,30 @@
+{
+  "name": "1cv",
+  "version": "0.1.0-beta.0",
+  "description": "Manage one local freelancer profile and safely reuse it across marketplace forms.",
+  "author": {
+    "name": "Daniel Sinewe",
+    "url": "https://1cv.app"
+  },
+  "homepage": "https://1cv.app",
+  "repository": "https://github.com/danielsinewe/onecv",
+  "license": "MIT",
+  "keywords": ["freelancer", "profile", "marketplace", "browser-automation"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "1CV",
+    "shortDescription": "One profile for freelancer marketplaces",
+    "longDescription": "Keep freelancer profile data local, preview platform-specific mappings, and fill marketplace forms through the user's own browser session.",
+    "developerName": "Daniel Sinewe",
+    "category": "Productivity",
+    "capabilities": ["Local profile", "Browser automation", "Human review"],
+    "websiteURL": "https://1cv.app",
+    "privacyPolicyURL": "https://1cv.app/privacy",
+    "termsOfServiceURL": "https://1cv.app/terms",
+    "defaultPrompt": [
+      "Create my local 1CV profile.",
+      "Preview my BizForward application.",
+      "Fill BizForward and stop for my review."
+    ]
+  }
+}

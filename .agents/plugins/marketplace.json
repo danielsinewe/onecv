@@ -1,0 +1,20 @@
+{
+  "name": "1cv",
+  "interface": {
+    "displayName": "1CV"
+  },
+  "plugins": [
+    {
+      "name": "1cv",
+      "source": {
+        "source": "local",
+        "path": "./plugins/1cv"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

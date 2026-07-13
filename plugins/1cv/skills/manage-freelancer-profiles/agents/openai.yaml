@@ -1,0 +1,4 @@
+interface:
+  display_name: "1CV Profile Manager"
+  short_description: "Keep marketplace profiles current locally"
+  default_prompt: "Use $manage-freelancer-profiles to prepare and update my freelancer profiles."

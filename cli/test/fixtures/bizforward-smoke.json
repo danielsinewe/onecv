@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "identity": {
+    "fullName": "1CV Browser Smoke Test",
+    "email": "browser-smoke@example.com",
+    "links": {
+      "website": "https://1cv.app"
+    }
+  },
+  "professional": {
+    "headline": "Freelancer profile automation test",
+    "summary": "",
+    "specialties": ["Software Development"],
+    "skills": [],
+    "languages": []
+  },
+  "preferences": {
+    "remote": true,
+    "locations": []
+  },
+  "assets": {}
+}
