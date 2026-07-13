@@ -4,11 +4,14 @@ One local profile for every freelance marketplace.
 
 1CV keeps the canonical freelancer profile on the user's machine, maps it to each platform, and fills forms in the user's own Chrome session. Login, MFA, CAPTCHA, Cloudflare checks, consent, and final review remain with the user.
 
+Supabase provides optional authenticated backup, revision history, platform state, and sync audit records. The local profile remains usable without an account or network connection. Credentials and browser sessions are never uploaded.
+
 ## MVP
 
 - [`cli/`](cli/) — independently publishable `1cv` npm package with the `1cv` command
 - [`plugins/1cv/`](plugins/1cv/) — Codex plugin and portable Agent Skill
 - BizForward adapter — name, email, specialty, public profile, optional CV, explicit consent
+- [`supabase/migrations/`](supabase/migrations/) — RLS-protected cloud sync schema; every table uses the `onecv_` prefix
 
 ```bash
 cd cli
