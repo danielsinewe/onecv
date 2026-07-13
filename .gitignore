@@ -2,3 +2,8 @@
 node_modules/
 dist/
 *.tgz
+.playwright-cli/
+.vercel/
+output/
+web/dist/
+web/node_modules/

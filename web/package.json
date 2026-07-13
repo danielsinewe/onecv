@@ -1,0 +1,16 @@
+{
+  "name": "onecv-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@fontsource-variable/manrope": "5.2.8",
+    "@fontsource-variable/newsreader": "5.2.10",
+    "vite": "8.1.4"
+  }
+}

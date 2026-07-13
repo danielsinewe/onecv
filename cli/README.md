@@ -18,6 +18,7 @@ npm link
 During the public beta, start without cloning the repository:
 
 ```bash
+npx @danielsinewe/1cv@next start https://www.linkedin.com/in/your-profile
 npx @danielsinewe/1cv@next init
 npx @danielsinewe/1cv@next plan bizforward
 npx @danielsinewe/1cv@next apply bizforward

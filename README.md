@@ -29,6 +29,7 @@ The default action fills and pauses. Only `1cv apply bizforward --consent --subm
 During the public beta, a new user starts with no repository checkout:
 
 ```bash
+npx @danielsinewe/1cv@next start https://www.linkedin.com/in/your-profile
 npx @danielsinewe/1cv@next init
 npx @danielsinewe/1cv@next plan bizforward
 npx @danielsinewe/1cv@next apply bizforward
@@ -40,6 +41,8 @@ Install the Codex plugin from the public repository:
 codex plugin marketplace add danielsinewe/onecv
 codex plugin add 1cv@1cv
 ```
+
+The public onboarding site lives in [`web/`](web/). It validates LinkedIn profile URLs locally in the browser and generates the single `1cv start` command; it does not submit the URL to a server.
 
 ## Adapter contract
 

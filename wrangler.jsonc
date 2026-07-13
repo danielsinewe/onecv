@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "onecv",
+  "compatibility_date": "2026-07-13",
+  "route": "1cv.app/*",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./web/dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
