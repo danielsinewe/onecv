@@ -34,7 +34,7 @@ npx @danielsinewe/1cv@next apply bizforward
 Install the Codex plugin from the public repository:
 
 ```bash
-codex plugin marketplace add danielsinewe/1cv
+codex plugin marketplace add danielsinewe/onecv
 codex plugin add 1cv@1cv
 ```
 
