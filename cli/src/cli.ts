@@ -56,7 +56,8 @@ function help(): void {
 
 Usage:
   1cv start <linkedin-url> [--print]
-  1cv init [--profile path] [--force]
+  1cv init --name name --email email --specialty specialty
+           [--linkedin url] [--profile path] [--force]
   1cv profile [--profile path] [--json]
   1cv platforms [--json]
   1cv plan <platform> [--profile path] [--json]

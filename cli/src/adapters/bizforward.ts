@@ -9,6 +9,16 @@ function specialty(profile: Profile): string {
   return profile.professional.specialties.join(", ");
 }
 
+async function fillAndVerify(page: Page, name: string, value: string): Promise<void> {
+  const field = page.getByRole("textbox", { name, exact: true });
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await field.fill(value);
+    if (await field.inputValue() === value) return;
+    await page.waitForTimeout(150);
+  }
+  throw new Error(`Browser verification failed for ${name}.`);
+}
+
 export const bizforwardAdapter: PlatformAdapter = {
   id: "bizforward",
   name: "BizForward",
@@ -53,13 +63,16 @@ export const bizforwardAdapter: PlatformAdapter = {
     const cookieDialog = page.getByRole("dialog");
     if (await cookieDialog.isVisible().catch(() => false)) {
       const save = cookieDialog.getByRole("button", { name: "Speichern", exact: true });
-      if (await save.isVisible().catch(() => false)) await save.click();
+      if (await save.isVisible().catch(() => false)) {
+        await save.click();
+        await cookieDialog.waitFor({ state: "hidden" }).catch(() => undefined);
+      }
     }
 
-    await page.getByRole("textbox", { name: "Name", exact: true }).fill(profile.identity.fullName);
-    await page.getByRole("textbox", { name: "E-Mail", exact: true }).fill(profile.identity.email);
-    await page.getByRole("textbox", { name: "Fachgebiet", exact: true }).fill(specialty(profile));
-    await page.getByRole("textbox", { name: "Dein Profil", exact: true }).fill(preferredProfileUrl(profile) ?? "");
+    await fillAndVerify(page, "Name", profile.identity.fullName);
+    await fillAndVerify(page, "E-Mail", profile.identity.email);
+    await fillAndVerify(page, "Fachgebiet", specialty(profile));
+    await fillAndVerify(page, "Dein Profil", preferredProfileUrl(profile) ?? "");
 
     if (profile.assets.cv) {
       const cv = expandHome(profile.assets.cv);
@@ -71,16 +84,6 @@ export const bizforwardAdapter: PlatformAdapter = {
       await page.getByRole("checkbox", { name: /bizforward meine persönlichen Daten/ }).check();
     }
 
-    const expected = [
-      ["Name", profile.identity.fullName],
-      ["E-Mail", profile.identity.email],
-      ["Fachgebiet", specialty(profile)],
-      ["Dein Profil", preferredProfileUrl(profile) ?? ""]
-    ] as const;
-    for (const [name, value] of expected) {
-      const actual = await page.getByRole("textbox", { name, exact: true }).inputValue();
-      if (actual !== value) throw new Error(`Browser verification failed for ${name}.`);
-    }
     if (options.consent && !await page.getByRole("checkbox", { name: /bizforward meine persönlichen Daten/ }).isChecked()) {
       throw new Error("Browser verification failed for BizForward consent.");
     }
