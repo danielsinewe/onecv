@@ -87,7 +87,7 @@ function linkedinProfileUrl(value: string | undefined): string {
 }
 
 function onboardingPrompt(linkedinUrl: string): string {
-  return `Use the 1CV skill in this Codex desktop task to import my visible LinkedIn profile from ${linkedinUrl} with Codex's in-app browser. Keep browser work inside Codex and let me handle login, verification, or cookie prompts. Show me the extracted profile for review, ask only for essential missing information, create my local 1CV, then prepare BizForward without submitting anything.`;
+  return `Use the 1CV skill in this Codex desktop task to import my visible LinkedIn profile from ${linkedinUrl} with Codex's in-app browser. Keep browser work inside Codex and let me handle login or verification. Show me the extracted profile for review, ask only for essential missing information, create my local 1CV, then prepare BizForward without submitting anything.`;
 }
 
 function codexDesktopLink(prompt: string): string {
@@ -301,23 +301,16 @@ async function main(): Promise<void> {
     const submit = args.flags.has("submit");
     if (submit && !consent) throw new Error("--submit requires --consent. Consent is never inferred.");
 
-    const headless = args.flags.has("headless");
     const plan = await adapter.plan(profile);
     if (plan.warnings.length) printPlan(plan);
     const session = await openBrowser({
       cdpUrl: textFlag(args, "cdp-url"),
-      headless,
+      headless: args.flags.has("headless"),
       userDataDir: textFlag(args, "browser-profile")
     });
     try {
       const page = await session.context.newPage();
-      await adapter.fill(page, profile, {
-        consent,
-        submit,
-        onManualAction: !headless && stdin.isTTY
-          ? async (message) => console.log(message)
-          : undefined
-      });
+      await adapter.fill(page, profile, { consent, submit });
       if (submit) {
         await adapter.submit(page);
         console.log(await adapter.verify(page));

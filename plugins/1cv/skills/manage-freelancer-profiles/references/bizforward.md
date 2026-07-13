@@ -15,4 +15,4 @@ The public form requests screening for BizForward's freelancer pool. A successfu
 
 Use accessible labels rather than generated CSS classes. If labels or the flow change, stop before submission and update the adapter from a fresh browser inspection.
 
-BizForward's cookie manager rejects automated consent clicks. Ask the user to choose `Speichern`, wait for the cookie window to close, and only then fill the form.
+The CLI waits for BizForward's delayed cookie window, automatically keeps only necessary cookies, verifies that the window closed, and then fills the form.

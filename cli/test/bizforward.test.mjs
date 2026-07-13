@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { bizforwardAdapter, waitForCookieOverlay } from "../dist/adapters/bizforward.js";
+import { bizforwardAdapter, dismissCookieOverlay } from "../dist/adapters/bizforward.js";
 import { PROFILE_TEMPLATE } from "../dist/profile.js";
 
 test("maps the portable profile to BizForward's public intake", async () => {
@@ -12,13 +12,13 @@ test("maps the portable profile to BizForward's public intake", async () => {
   assert.ok(plan.warnings.some((warning) => warning.includes("No CV")));
 });
 
-function cookiePage({ visible, waitFor }) {
+function cookiePage({ waitFor, click }) {
   return {
     getByRole(role, options) {
       assert.equal(role, "button");
       assert.deepEqual(options, { name: "Speichern", exact: true });
       return {
-        isVisible: async () => visible,
+        click,
         waitFor
       };
     }
@@ -26,27 +26,35 @@ function cookiePage({ visible, waitFor }) {
 }
 
 test("continues when BizForward has no cookie overlay", async () => {
-  await waitForCookieOverlay(cookiePage({ visible: false }), { consent: false, submit: false });
+  await dismissCookieOverlay(cookiePage({
+    waitFor: async () => { throw new Error("not visible"); }
+  }));
 });
 
-test("waits for a user to close BizForward's cookie overlay", async () => {
-  let message = "";
-  let waitOptions;
-  await waitForCookieOverlay(cookiePage({
-    visible: true,
-    waitFor: async (options) => { waitOptions = options; }
-  }), {
-    consent: false,
-    submit: false,
-    onManualAction: async (value) => { message = value; }
-  });
-  assert.equal(message, "Choose Speichern in BizForward's cookie window. 1CV will continue.");
-  assert.deepEqual(waitOptions, { state: "hidden", timeout: 120_000 });
+test("automatically closes BizForward's delayed cookie overlay", async () => {
+  const waits = [];
+  let clickOptions;
+  await dismissCookieOverlay(cookiePage({
+    waitFor: async (options) => { waits.push(options); },
+    click: async (options) => { clickOptions = options; }
+  }));
+  assert.deepEqual(waits, [
+    { state: "visible", timeout: 2_000 },
+    { state: "hidden", timeout: 5_000 }
+  ]);
+  assert.deepEqual(clickOptions, { delay: 120 });
 });
 
-test("fails clearly when the cookie overlay needs a non-interactive click", async () => {
+test("fails clearly when BizForward keeps the cookie overlay open", async () => {
+  let waits = 0;
   await assert.rejects(
-    waitForCookieOverlay(cookiePage({ visible: true }), { consent: false, submit: false }),
-    /Choose Speichern/
+    dismissCookieOverlay(cookiePage({
+      waitFor: async () => {
+        waits += 1;
+        if (waits > 1) throw new Error("still visible");
+      },
+      click: async () => undefined
+    })),
+    /could not close/
   );
 });

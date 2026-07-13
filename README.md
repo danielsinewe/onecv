@@ -2,7 +2,7 @@
 
 One local profile for every freelance marketplace.
 
-1CV keeps the canonical freelancer profile on the user's machine, maps it to each platform, and fills forms in a user-owned browser. Login, MFA, CAPTCHA, cookie prompts, consent, and final review remain with the user.
+1CV keeps the canonical freelancer profile on the user's machine, maps it to each platform, and fills forms in a user-owned browser. Routine steps such as necessary-cookie prompts are automated. Login, MFA, CAPTCHA, consent, and final review remain with the user.
 
 Supabase provides optional authenticated backup, revision history, platform state, and sync audit records. The local profile remains usable without an account or network connection. Credentials and browser sessions are never uploaded.
 

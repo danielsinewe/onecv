@@ -19,19 +19,19 @@ async function fillAndVerify(page: Page, name: string, value: string): Promise<v
   throw new Error(`Browser verification failed for ${name}.`);
 }
 
-export async function waitForCookieOverlay(page: Page, options: ApplyOptions): Promise<void> {
+export async function dismissCookieOverlay(page: Page): Promise<void> {
   const save = page.getByRole("button", { name: "Speichern", exact: true });
-  if (!await save.isVisible().catch(() => false)) return;
-
-  if (!options.onManualAction) {
-    throw new Error("Choose Speichern in BizForward's cookie window, then run 1cv apply again.");
+  try {
+    await save.waitFor({ state: "visible", timeout: 2_000 });
+  } catch {
+    return;
   }
 
-  await options.onManualAction("Choose Speichern in BizForward's cookie window. 1CV will continue.");
+  await save.click({ delay: 120 });
   try {
-    await save.waitFor({ state: "hidden", timeout: 120_000 });
+    await save.waitFor({ state: "hidden", timeout: 5_000 });
   } catch {
-    throw new Error("BizForward's cookie window is still open. Close it and run 1cv apply again.");
+    throw new Error("1CV could not close BizForward's cookie window.");
   }
 }
 
@@ -76,7 +76,7 @@ export const bizforwardAdapter: PlatformAdapter = {
 
     await page.goto(this.url, { waitUntil: "domcontentloaded" });
 
-    await waitForCookieOverlay(page, options);
+    await dismissCookieOverlay(page);
 
     await fillAndVerify(page, "Name", profile.identity.fullName);
     await fillAndVerify(page, "E-Mail", profile.identity.email);
