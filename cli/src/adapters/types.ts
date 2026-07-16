@@ -16,6 +16,7 @@ export interface ApplicationPlan {
 
 export interface ApplyOptions {
   consent: boolean;
+  headless: boolean;
   submit: boolean;
 }
 
@@ -23,6 +24,7 @@ export interface PlatformAdapter {
   id: string;
   name: string;
   url: string;
+  workflow?: "application" | "search";
   plan(profile: Profile): Promise<ApplicationPlan>;
   fill(page: Page, profile: Profile, options: ApplyOptions): Promise<void>;
   submit(page: Page): Promise<void>;

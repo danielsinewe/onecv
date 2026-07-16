@@ -26,5 +26,5 @@ test("onboards a user without repository-local data", async () => {
   assert.equal(profile.identity.fullName, "Anonymous User");
   assert.equal(profile.identity.links.linkedin, "https://linkedin.com/in/anonymous-user");
   assert.deepEqual(profile.assets, {});
-  assert.match(stdout, /Next: 1cv plan bizforward/);
+  assert.match(stdout, /Next: 1cv platforms/);
 });

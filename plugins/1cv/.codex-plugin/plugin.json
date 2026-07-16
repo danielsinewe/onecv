@@ -1,6 +1,6 @@
 {
   "name": "1cv",
-  "version": "0.1.0-beta.6",
+  "version": "0.1.0-beta.7",
   "description": "Manage one local freelancer profile and safely reuse it across marketplace forms.",
   "author": {
     "name": "Daniel Sinewe",
@@ -23,6 +23,7 @@
     "termsOfServiceURL": "https://1cv.app/terms",
     "defaultPrompt": [
       "Create my local 1CV profile.",
+      "Prepare my 9am job search from my 1CV profile.",
       "Preview my BizForward application.",
       "Fill BizForward and stop for my review."
     ]

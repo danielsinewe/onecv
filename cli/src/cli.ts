@@ -4,12 +4,13 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
 import { stdin, stdout } from "node:process";
 import { bizforwardAdapter } from "./adapters/bizforward.js";
+import { nineAmAdapter } from "./adapters/nine-am.js";
 import type { PlatformAdapter } from "./adapters/types.js";
 import { openBrowser } from "./browser.js";
 import { createProfile, defaultProfilePath, loadProfile, oneCvHome, preferredProfileUrl, saveProfile, type Profile } from "./profile.js";
 import { diffPlan, loadPlatformState, recordPrepared, recordSubmitted } from "./state.js";
 
-const adapters: Record<string, PlatformAdapter> = { bizforward: bizforwardAdapter };
+const adapters: Record<string, PlatformAdapter> = { "9am": nineAmAdapter, bizforward: bizforwardAdapter };
 
 interface ParsedArgs {
   positionals: string[];
@@ -66,11 +67,14 @@ Usage:
   1cv plan <platform> [--profile path] [--json]
   1cv diff <platform> [--profile path] [--json]
   1cv status <platform> [--profile path] [--json]
+  1cv search 9am [--profile path]
+                 [--browser-profile path | --cdp-url url] [--headless]
   1cv apply <platform> [--profile path] [--consent] [--submit]
                            [--browser-profile path | --cdp-url url] [--headless]
 
 Safety:
-  apply fills the form and pauses for review. It never submits unless both
+  search prepares matching filters and never applies to a job. apply fills a
+  marketplace form and pauses for review. It never submits unless both
   --submit and --consent are present. Profile data stays on this machine.`);
 }
 
@@ -295,10 +299,10 @@ function printPlan(plan: Awaited<ReturnType<PlatformAdapter["plan"]>>): void {
   for (const warning of plan.warnings) console.log(`! ${warning}`);
 }
 
-async function waitForReview(): Promise<void> {
+async function waitForReview(message = "Review the filled form in Chrome. Press Enter to close 1CV… "): Promise<void> {
   if (!stdin.isTTY) return;
   const readline = createInterface({ input: stdin, output: stdout });
-  await readline.question("Review the filled form in Chrome. Press Enter to close 1CV… ");
+  await readline.question(message);
   readline.close();
 }
 
@@ -316,7 +320,7 @@ async function main(): Promise<void> {
     const profile = await onboardingProfile(args);
     const path = await createProfile(profilePath, args.flags.has("force"), profile);
     console.log(`Created ${path}`);
-    console.log("Next: 1cv plan bizforward");
+    console.log("Next: 1cv platforms");
     return;
   }
 
@@ -391,11 +395,15 @@ async function main(): Promise<void> {
     return;
   }
 
-  if (command === "apply") {
+  if (command === "apply" || command === "search") {
     const adapter = adapterFor(target);
+    const isSearch = adapter.workflow === "search";
+    if (command === "search" && !isSearch) throw new Error(`${adapter.name} uses "1cv apply ${adapter.id}".`);
+    if (command === "apply" && isSearch) throw new Error(`${adapter.name} uses "1cv search ${adapter.id}". No job application is automated.`);
     const profile = await loadProfile(profilePath);
     const consent = args.flags.has("consent");
     const submit = args.flags.has("submit");
+    if (isSearch && (consent || submit)) throw new Error("9am search does not accept --consent or --submit.");
     if (submit && !consent) throw new Error("--submit requires --consent. Consent is never inferred.");
 
     const plan = await adapter.plan(profile);
@@ -407,13 +415,17 @@ async function main(): Promise<void> {
     });
     try {
       const page = await session.context.newPage();
-      await adapter.fill(page, profile, { consent, submit });
+      await adapter.fill(page, profile, { consent, headless: args.flags.has("headless"), submit });
       await recordPrepared(adapter.id, profilePath, plan);
       if (submit) {
         await adapter.submit(page);
         const confirmation = await adapter.verify(page);
         await recordSubmitted(adapter.id, profilePath, plan, confirmation);
         console.log(confirmation);
+      } else if (isSearch) {
+        console.log(await adapter.verify(page));
+        console.log("No job application has been submitted.");
+        await waitForReview("Review the 9am matches in Chrome. Press Enter to close 1CV… ");
       } else {
         console.log("Form filled. Nothing has been submitted.");
         await waitForReview();

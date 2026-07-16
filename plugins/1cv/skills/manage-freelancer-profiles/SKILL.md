@@ -1,6 +1,6 @@
 ---
 name: manage-freelancer-profiles
-description: Manage, validate, map, and update a freelancer's portable 1CV profile with the local-first 1CV CLI. Use when a user wants to create one master CV/profile, preview fields for a freelance marketplace, fill or update a marketplace profile in their own browser, apply to BizForward, or avoid repeatedly maintaining Malt, Freelancer.com, freelancermap, and similar profiles.
+description: Manage, validate, map, and update a freelancer's portable 1CV profile with the local-first 1CV CLI. Use when a user wants to create one master CV/profile, prepare 9am job matching, preview fields for a freelance marketplace, fill or update a marketplace profile in their own browser, apply to BizForward, or avoid repeatedly maintaining marketplace profiles.
 ---
 
 # Manage Freelancer Profiles
@@ -16,7 +16,7 @@ Use the 1CV CLI as the deterministic layer. Keep personal data and browser sessi
 5. Validate with `1cv profile`.
 6. List supported adapters with `1cv platforms`.
 7. Check `1cv status <platform>` and `1cv diff <platform>`, then preview with `1cv plan <platform>` before opening a browser.
-8. Run `1cv apply <platform>` to fill the form and stop for human review. A verified fill updates only local platform state.
+8. For 9am, read [9am.md](references/9am.md), run `1cv search 9am`, and leave actual job applications to the user. For intake forms, run `1cv apply <platform>` and stop for human review. A verified preparation updates only local platform state.
 9. Add `--consent --submit` only when the user explicitly authorizes that exact submission. Never infer legal consent. Record submission state only after visible confirmation.
 
 ## Browser and authentication
@@ -33,6 +33,8 @@ Use the 1CV CLI as the deterministic layer. Keep personal data and browser sessi
 ## Platform handling
 
 For BizForward-specific fields and limits, read [bizforward.md](references/bizforward.md). The public form is only the first intake. Do not claim that an expert-pool profile was created until BizForward sends and the user opens a personalized invitation.
+
+For 9am, read [9am.md](references/9am.md). Treat job-search preparation and applying to a particular job as separate workflows. Never convert `1cv search 9am` into an application action.
 
 For an unsupported marketplace, inspect its current form in the user's browser, create or update a typed adapter in the CLI, test preview mode, and preserve the preview/review/submit boundary.
 
