@@ -1,0 +1,103 @@
+const measurementId = "G-JCEGJ83QQN";
+const consentStorageKey = "onecv_google_analytics_consent";
+const validChoices = new Set(["granted", "denied"]);
+
+window.dataLayer = window.dataLayer || [];
+window.gtag = window.gtag || function gtag() {
+  window.dataLayer.push(arguments);
+};
+
+window.gtag("consent", "default", {
+  analytics_storage: "denied",
+  ad_storage: "denied",
+  ad_user_data: "denied",
+  ad_personalization: "denied",
+  wait_for_update: 500,
+});
+
+function storedConsent() {
+  try {
+    const value = window.localStorage.getItem(consentStorageKey);
+    return validChoices.has(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function updateConsent(choice) {
+  window.gtag("consent", "update", {
+    analytics_storage: choice,
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+
+  try {
+    window.localStorage.setItem(consentStorageKey, choice);
+  } catch {
+    // Consent still applies for this page when storage is unavailable.
+  }
+}
+
+const initialConsent = storedConsent();
+if (initialConsent) updateConsent(initialConsent);
+
+const tag = document.createElement("script");
+tag.async = true;
+tag.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+document.head.append(tag);
+
+window.gtag("js", new Date());
+window.gtag("config", measurementId);
+
+function addConsentControls() {
+  const footerLinks = document.querySelector(".footer-links");
+  if (footerLinks && !footerLinks.querySelector("[data-analytics-settings]")) {
+    const settingsButton = document.createElement("button");
+    settingsButton.className = "footer-consent-button";
+    settingsButton.type = "button";
+    settingsButton.dataset.analyticsSettings = "";
+    settingsButton.textContent = "Cookie settings";
+    footerLinks.append(settingsButton);
+  }
+
+  const banner = document.createElement("section");
+  banner.className = "analytics-consent";
+  banner.dataset.analyticsConsent = "";
+  banner.setAttribute("aria-label", "Analytics consent");
+  banner.setAttribute("aria-modal", "true");
+  banner.setAttribute("role", "dialog");
+  banner.innerHTML = `
+    <div>
+      <strong>Optional analytics</strong>
+      <p>Allow anonymous Google Analytics to help improve 1CV. Advertising stays off.</p>
+      <a href="/cookie-policy/">Cookie policy</a>
+    </div>
+    <div class="analytics-consent-actions">
+      <button type="button" data-consent-choice="denied">Reject</button>
+      <button class="analytics-consent-allow" type="button" data-consent-choice="granted">Allow</button>
+    </div>`;
+  document.body.append(banner);
+
+  const openBanner = () => { banner.hidden = false; };
+  const closeBanner = () => { banner.hidden = true; };
+
+  document.querySelectorAll("[data-analytics-settings]").forEach((button) => {
+    button.addEventListener("click", openBanner);
+  });
+
+  banner.querySelectorAll("[data-consent-choice]").forEach((button) => {
+    button.addEventListener("click", () => {
+      updateConsent(button.dataset.consentChoice);
+      closeBanner();
+    });
+  });
+
+  if (initialConsent) closeBanner();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", addConsentControls, { once: true });
+} else {
+  addConsentControls();
+}

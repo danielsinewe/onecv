@@ -1,6 +1,7 @@
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/newsreader";
 import "./styles.css";
+import "./analytics.js";
 
 const form = document.querySelector("[data-start-form]");
 const input = document.querySelector("[data-linkedin-input]");
