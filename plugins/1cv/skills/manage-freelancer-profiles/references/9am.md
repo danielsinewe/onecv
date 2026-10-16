@@ -1,6 +1,8 @@
 # 9am
 
-Use `1cv plan 9am` to preview the local mapping and `1cv search 9am` to prepare the signed-in job board.
+Before planning, reading status/diff, or opening a browser, run `--help` and `platforms` with the exact CLI selected for this session. Continue only if it lists both the `9am` adapter and the `search` command. If either is missing, explain that this CLI does not support 9am search and stop; do not guess commands or suggest an unpublished `npx` version. A plugin update does not upgrade the installed CLI.
+
+With those capabilities confirmed, use that same CLI's `plan 9am` to preview the local mapping and `search 9am` to prepare the signed-in job board.
 
 ## Mapping
 

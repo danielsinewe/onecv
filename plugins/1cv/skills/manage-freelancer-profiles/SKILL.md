@@ -9,14 +9,14 @@ Use the 1CV CLI as the deterministic layer. Keep personal data and browser sessi
 
 ## Workflow
 
-1. Check that `1cv` is available with `command -v 1cv`. If absent during beta, use `npx @danielsinewe/1cv` for every command. From the source repository only, build with `npm --prefix cli install && npm --prefix cli run build` and invoke `node cli/dist/cli.js`.
+1. Select the actual CLI: check `command -v 1cv`; if absent, use the published `npx @danielsinewe/1cv`, or an explicitly selected source build via `node cli/dist/cli.js`. Use that same command prefix throughout. First run its `--help` and confirm the requested command is listed. General profile creation, import, editing, and review do not require a marketplace adapter. For marketplace-specific work, also run `platforms` and confirm both the requested adapter and required command before platform plan/status/diff calls or browser preparation; otherwise report the missing capability and stop that marketplace workflow. Do not infer capabilities from the plugin version, repository source, or a prepared release. Updating this plugin does not upgrade an installed CLI. Never suggest an unpublished version through `npx` as a workaround.
 2. When the user provides their own LinkedIn profile URL in a Codex desktop task, use Codex's in-app browser and open the exact URL. Let the user handle login, MFA, CAPTCHA, or verification. Read only profile information visibly available to that user, including name, headline, location, about text, skills, languages, and public links. Never use a remote scraper or extract browser credentials.
 3. Show the extracted profile as a concise review before saving it. Ask only for required information LinkedIn does not provide, especially email. Do not invent missing facts.
 4. Create a profile only when it does not exist: `1cv init`. Never overwrite one without explicit approval. Use `1cv edit` for normal updates so the user does not need to edit JSON. Read [profile-schema.md](references/profile-schema.md) only when the full schema is needed.
 5. Validate with `1cv profile`.
-6. List supported adapters with `1cv platforms`.
-7. Check `1cv status <platform>` and `1cv diff <platform>`, then preview with `1cv plan <platform>` before opening a browser.
-8. For 9am, read [9am.md](references/9am.md), run `1cv search 9am`, and leave actual job applications to the user. For intake forms, run `1cv apply <platform>` and stop for human review. A verified preparation updates only local platform state.
+6. For marketplace-specific work, choose only an adapter and command confirmed by the selected CLI's capability check. If the selected executable or resolved package changes, repeat `--help` and, for marketplace work, `platforms` before continuing.
+7. For that marketplace, check `1cv status <platform>` and `1cv diff <platform>`, then preview with `1cv plan <platform>` before opening a browser.
+8. For 9am, continue only when that same CLI lists the `9am` adapter and the `search` command: read [9am.md](references/9am.md), then run `1cv search 9am` and leave actual job applications to the user. If either is unavailable, stop clearly without a plan/status/diff call or browser launch. For supported intake forms, run `1cv apply <platform>` and stop for human review. A verified preparation updates only local platform state.
 9. Add `--consent --submit` only when the user explicitly authorizes that exact submission. Never infer legal consent. Record submission state only after visible confirmation.
 
 ## Browser and authentication
@@ -36,7 +36,7 @@ For BizForward-specific fields and limits, read [bizforward.md](references/bizfo
 
 For 9am, read [9am.md](references/9am.md). Treat job-search preparation and applying to a particular job as separate workflows. Never convert `1cv search 9am` into an application action.
 
-For an unsupported marketplace, inspect its current form in the user's browser, create or update a typed adapter in the CLI, test preview mode, and preserve the preview/review/submit boundary.
+An unsupported marketplace is a separate adapter-development task. Do not launch a browser or edit/install a CLI to work around the capability check during ordinary preparation. If the user asks to add support, inspect its current form in the user's browser, create or update a typed adapter, test preview mode, and preserve the preview/review/submit boundary.
 
 ## Output
 

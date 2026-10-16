@@ -20,7 +20,10 @@ npm install
 npm test
 npm link
 
+1cv --help
 1cv init
+1cv platforms
+# Marketplace commands require the adapter and command to be listed by this CLI.
 1cv plan 9am
 1cv search 9am
 1cv plan bizforward
@@ -30,13 +33,16 @@ npm link
 
 The default action fills and pauses. Only `1cv apply bizforward --consent --submit` submits.
 
+The commands above use a build of this source. Published npm capabilities can lag behind it. For general profile work, confirm the requested command in the selected CLI's `--help`; no marketplace adapter is needed. For marketplace-specific work, also run `platforms` and confirm both the adapter and required command before platform planning, status/diff checks, or browser preparation; otherwise stop that marketplace workflow and explain the missing capability. Updating the Codex plugin does not upgrade an installed CLI, and an unpublished version must not be suggested through `npx`.
+
 During the public beta, a new user starts with no repository checkout:
 
 ```bash
+npx @danielsinewe/1cv --help
 npx @danielsinewe/1cv start https://www.linkedin.com/in/your-profile
 npx @danielsinewe/1cv init
-npx @danielsinewe/1cv plan 9am
-npx @danielsinewe/1cv search 9am
+npx @danielsinewe/1cv platforms
+# Marketplace commands require the adapter and command to be listed by this CLI.
 npx @danielsinewe/1cv plan bizforward
 npx @danielsinewe/1cv apply bizforward
 npx @danielsinewe/1cv status bizforward
@@ -57,4 +63,4 @@ Use `1cv edit` to update the local profile without editing JSON. `1cv search 9am
 
 Every marketplace integration must support a preview plan, use the local profile, run through a user-owned browser context, and verify the visible result. Adapters must not store credentials or bypass platform security.
 
-9am search preparation and BizForward intake are supported. Job applications, login, MFA, CAPTCHA, legal consent, and final submission remain explicit user actions.
+This source includes 9am search preparation and BizForward intake. Use the selected CLI's capability output to determine what is available in that installation. Job applications, login, MFA, CAPTCHA, legal consent, and final submission remain explicit user actions.
