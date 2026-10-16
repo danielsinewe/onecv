@@ -38,7 +38,7 @@ Or install it globally with `npm install -g @danielsinewe/1cv`.
 
 `edit` updates the local profile interactively or with flags. `diff <platform>` shows field changes since the last verified preparation. `status <platform>` distinguishes prepared forms from confirmed submissions.
 
-`search 9am` opens 9am's job board, waits for sign-in when needed, and applies the local skills, remote/location, languages, and hourly-rate preferences. It never applies to a job. Sign in once in the dedicated browser and later runs reuse that session automatically.
+`search 9am` opens 9am's job board, waits for sign-in when needed, and applies the local skills, remote/location, languages, and EUR hourly-rate preferences. Daily and non-EUR rates leave the rate filter unchanged and show a warning; no unit or currency conversion is performed. Preparation is recorded only after the search verification succeeds. It never applies to a job. Sign in once in the dedicated browser and later runs reuse that session automatically.
 
 `apply` opens Chrome, keeps only necessary cookies, fills the form, and stops for review. Submission is explicit: `1cv apply bizforward --consent --submit`.
 

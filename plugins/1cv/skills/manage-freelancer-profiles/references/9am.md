@@ -9,8 +9,8 @@ Use `1cv plan 9am` to preview the local mapping and `1cv search 9am` to prepare 
 - Remote only: mirrors `preferences.remote`.
 - Location: uses the first preferred location when one is configured.
 - Languages: uses the local language list.
-- Minimum hourly rate: uses an hourly preference and caps the 9am slider at its visible `200+` maximum.
-- Daily rates are not converted into hourly or fixed-project budgets.
+- Minimum hourly rate: uses a EUR hourly preference and caps the 9am slider at its visible `200+` maximum.
+- Daily and non-EUR rates leave the rate filter unchanged with a warning. No unit or currency conversion is performed.
 
 ## Boundary
 

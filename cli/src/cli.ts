@@ -416,6 +416,7 @@ async function main(): Promise<void> {
     try {
       const page = await session.context.newPage();
       await adapter.fill(page, profile, { consent, headless: args.flags.has("headless"), submit });
+      const searchConfirmation = isSearch ? await adapter.verify(page) : undefined;
       await recordPrepared(adapter.id, profilePath, plan);
       if (submit) {
         await adapter.submit(page);
@@ -423,7 +424,7 @@ async function main(): Promise<void> {
         await recordSubmitted(adapter.id, profilePath, plan, confirmation);
         console.log(confirmation);
       } else if (isSearch) {
-        console.log(await adapter.verify(page));
+        console.log(searchConfirmation);
         console.log("No job application has been submitted.");
         await waitForReview("Review the 9am matches in Chrome. Press Enter to close 1CV… ");
       } else {

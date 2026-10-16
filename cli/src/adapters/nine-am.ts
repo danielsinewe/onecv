@@ -12,6 +12,11 @@ export function nineAmSearchTerms(profile: Profile): string[] {
   return unique([...profile.professional.specialties, ...profile.professional.skills]);
 }
 
+function hourlyMinimum(profile: Profile): number | undefined {
+  const rate = profile.preferences.rate;
+  return rate?.unit === "hour" && rate.currency.toUpperCase() === "EUR" ? rate.amount : undefined;
+}
+
 async function enabled(control: Locator): Promise<boolean> {
   return await control.getAttribute("aria-checked") === "true";
 }
@@ -61,9 +66,12 @@ export const nineAmAdapter: PlatformAdapter = {
 
   async plan(profile): Promise<ApplicationPlan> {
     const warnings: string[] = [];
+    const minimum = hourlyMinimum(profile);
     if (!nineAmSearchTerms(profile).length) warnings.push("Add at least one specialty or skill for useful job matching.");
     if (profile.preferences.rate?.unit === "day") {
       warnings.push("9am's search uses hourly or fixed-project budgets; the daily rate is left unchanged.");
+    } else if (profile.preferences.rate && minimum === undefined) {
+      warnings.push("9am's hourly search filter uses EUR; the non-EUR rate is left unchanged. No currency conversion is performed.");
     }
     return {
       platform: this.name,
@@ -76,8 +84,8 @@ export const nineAmAdapter: PlatformAdapter = {
         { field: "Languages", value: unique(profile.professional.languages).join(", "), required: false },
         {
           field: "Minimum hourly rate",
-          value: profile.preferences.rate?.unit === "hour"
-            ? `${profile.preferences.rate.currency} ${profile.preferences.rate.amount}`
+          value: minimum !== undefined
+            ? `EUR ${minimum}`
             : "",
           required: false
         }
@@ -105,8 +113,9 @@ export const nineAmAdapter: PlatformAdapter = {
     if (!profile.preferences.remote && await remote.isChecked()) await remote.uncheck();
     await addSelectValues(page, selects.nth(2), unique(profile.professional.languages));
 
-    if (profile.preferences.rate?.unit === "hour") {
-      await setHourlyMinimum(page, dialog, profile.preferences.rate.amount);
+    const minimum = hourlyMinimum(profile);
+    if (minimum !== undefined) {
+      await setHourlyMinimum(page, dialog, minimum);
     }
   },
 
