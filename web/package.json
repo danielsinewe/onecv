@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/check-internal-links.mjs && node scripts/check-analytics.mjs",
     "preview": "vite preview",
+    "test": "node --test test/*.test.mjs",
     "test:production": "node scripts/check-production.mjs"
   },
   "devDependencies": {

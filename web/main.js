@@ -9,6 +9,27 @@ const output = document.querySelector("[data-command-output]");
 const result = document.querySelector("[data-start-result]");
 const copyButton = document.querySelector("[data-copy-command]");
 const error = document.querySelector("[data-form-error]");
+const copyStatus = document.querySelector("[data-copy-status]");
+let commandVersion = 0;
+let copyTimer;
+
+function resetCopyState() {
+  commandVersion += 1;
+  window.clearTimeout(copyTimer);
+  copyButton.disabled = false;
+  copyButton.textContent = "Copy setup command";
+  copyStatus.textContent = "";
+}
+
+function selectCommand() {
+  const selection = window.getSelection();
+  if (!selection) return false;
+  const range = document.createRange();
+  range.selectNodeContents(output);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  return true;
+}
 
 function normalizeLinkedIn(value) {
   const candidate = /^https?:\/\//i.test(value) ? value : `https://${value}`;
@@ -26,24 +47,49 @@ function normalizeLinkedIn(value) {
 
 async function copyCommand() {
   const command = output?.textContent || "";
-  if (!command) return;
+  if (!command || result.hidden || copyButton.disabled) return;
+  const version = commandVersion;
+  copyButton.disabled = true;
+  copyStatus.textContent = "";
+  let copied = false;
   try {
     await navigator.clipboard.writeText(command);
+    copied = true;
   } catch {
-    const selection = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(output);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    document.execCommand("copy");
-    selection.removeAllRanges();
+    if (version !== commandVersion) return;
+    try {
+      copied = selectCommand() && document.execCommand("copy");
+      if (copied) window.getSelection()?.removeAllRanges();
+    } catch {
+      copied = false;
+    }
   }
+  if (version !== commandVersion) return;
+  copyButton.disabled = false;
+  if (!copied) {
+    output.focus({ preventScroll: true });
+    copyStatus.textContent = "Copy didn’t work. Select the command and copy it manually, or try again.";
+    return;
+  }
+  copyStatus.textContent = "Copied — paste in Terminal.";
   copyButton.textContent = "Copied — paste in Terminal";
-  window.setTimeout(() => { copyButton.textContent = "Copy setup command"; }, 2600);
+  copyTimer = window.setTimeout(() => {
+    if (version === commandVersion) copyButton.textContent = "Copy setup command";
+  }, 2600);
 }
+
+input?.addEventListener("input", () => {
+  resetCopyState();
+  output.textContent = "";
+  result.hidden = true;
+  error.textContent = "";
+  input.removeAttribute("aria-invalid");
+});
 
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
+  resetCopyState();
+  output.textContent = "";
   const linkedin = normalizeLinkedIn(input.value.trim());
   if (!linkedin) {
     error.textContent = "Use a LinkedIn profile URL like linkedin.com/in/your-name.";
