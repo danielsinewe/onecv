@@ -22,6 +22,7 @@ button { cursor: pointer; }
 .nav-link { color: var(--muted); text-underline-offset: 4px; font-size: .9rem; }
 
 .hero { min-height: calc(100vh - 82px); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: clamp(48px, 8vw, 120px); align-items: center; padding: 80px 0 92px; }
+.hero > * { min-width: 0; }
 .eyebrow { font-size: .72rem; font-weight: 760; letter-spacing: .15em; text-transform: uppercase; margin: 0 0 26px; }
 h1, h2 { font-family: "Newsreader Variable", serif; font-weight: 480; letter-spacing: -.055em; }
 h1 { font-size: clamp(4.1rem, 8.2vw, 7.8rem); line-height: .82; margin: 0; max-width: 760px; }
@@ -90,7 +91,7 @@ h1 { font-size: clamp(4.1rem, 8.2vw, 7.8rem); line-height: .82; margin: 0; max-w
 .legal-back { display: inline-block; margin-bottom: 48px; color: var(--muted); text-underline-offset: 4px; }
 
 @media (max-width: 840px) {
-  .hero { grid-template-columns: 1fr; padding-top: 58px; }
+  .hero { grid-template-columns: minmax(0, 1fr); padding-top: 58px; }
   .profile-card { width: calc(100% - 18px); }
   .proof-inner, .step-grid { grid-template-columns: 1fr; }
   .proof-item + .proof-item, .step + .step { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
