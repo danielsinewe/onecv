@@ -27,6 +27,8 @@ button { cursor: pointer; }
 h1, h2 { font-family: "Newsreader Variable", serif; font-weight: 480; letter-spacing: -.055em; }
 h1 { font-size: clamp(4.1rem, 8.2vw, 7.8rem); line-height: .82; margin: 0; max-width: 760px; }
 .lede { color: var(--muted); font-size: clamp(1rem, 1.8vw, 1.22rem); line-height: 1.55; max-width: 610px; margin: 34px 0 32px; }
+.setup-requirements { color: var(--muted); font-size: .82rem; line-height: 1.6; margin: -14px 0 24px; }
+.setup-requirements a { text-underline-offset: 3px; }
 .start-form { max-width: 650px; }
 .input-row { display: grid; grid-template-columns: 1fr auto; background: var(--white); border: 1px solid var(--ink); padding: 6px; }
 .input-row:focus-within { outline: 3px solid var(--signal); outline-offset: 3px; }
@@ -56,6 +58,13 @@ h1 { font-size: clamp(4.1rem, 8.2vw, 7.8rem); line-height: .82; margin: 0; max-w
 .proof-inner { display: grid; grid-template-columns: repeat(3, 1fr); }
 .proof-item { padding: 26px 0; color: var(--muted); font-size: .83rem; }
 .proof-item + .proof-item { border-left: 1px solid var(--line); padding-left: 28px; }
+.setup-preview { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 48px; align-items: center; padding: 92px 0 0; scroll-margin-top: 30px; }
+.setup-preview h2 { font-size: clamp(2.8rem, 5vw, 4.8rem); line-height: .95; margin: 0 0 20px; }
+.setup-preview p { color: var(--muted); font-size: .95rem; line-height: 1.6; }
+.setup-preview .preview-scope { font-size: .8rem; }
+.setup-preview-media { min-width: 0; margin: 0; }
+.setup-preview video { display: block; width: 100%; aspect-ratio: 16 / 9; background: var(--ink); border: 1px solid var(--line); }
+.setup-preview figcaption { color: var(--muted); font-size: .78rem; line-height: 1.6; margin-top: 14px; }
 .steps { padding: 120px 0; }
 .section-title { font-size: clamp(3rem, 7vw, 6.4rem); line-height: .88; margin: 0 0 70px; }
 .step-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); }
@@ -91,6 +100,7 @@ h1 { font-size: clamp(4.1rem, 8.2vw, 7.8rem); line-height: .82; margin: 0; max-w
 .legal-back { display: inline-block; margin-bottom: 48px; color: var(--muted); text-underline-offset: 4px; }
 
 @media (max-width: 840px) {
+  .setup-preview { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 70px; }
   .hero { grid-template-columns: minmax(0, 1fr); padding-top: 58px; }
   .profile-card { width: calc(100% - 18px); }
   .proof-inner, .step-grid { grid-template-columns: 1fr; }

@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="trustpilot-one-time-domain-verification-id" content="f8110451-c6f8-4ad4-8204-9e12c9b36f8c" />
-    <title>1CV — One profile for every freelance platform</title>
-    <meta name="description" content="Turn your LinkedIn profile into one local CV and safely reuse it across freelance platforms." />
-    <meta property="og:title" content="1CV — One profile. Every platform." />
-    <meta property="og:description" content="Start with LinkedIn. Review once. Reuse everywhere." />
-    <meta property="og:image" content="https://1cv.app/og.svg" />
+    <title>1CV — Your local freelance profile for BizForward</title>
+    <meta name="description" content="Review your LinkedIn profile in Codex, keep one local CV, and prepare BizForward intake. Requires Node.js 20+ and the Codex desktop app." />
+    <meta property="og:title" content="1CV — One local profile. Prepare BizForward." />
+    <meta property="og:description" content="Start with LinkedIn, review your local profile, and prepare BizForward intake. Final submission stays with you." />
+    <meta property="og:image" content="https://1cv.app/launch/1cv-setup-poster.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="https://1cv.app/" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
   </head>
@@ -23,6 +26,7 @@
           <p class="eyebrow">Local-first freelancer profile</p>
           <h1>Paste LinkedIn.<br />Leave with one CV.</h1>
           <p class="lede">Create one reusable profile. Prepare BizForward intake. Nothing is submitted automatically.</p>
+          <p class="setup-requirements">Free, open-source CLI. Requires Node.js 20+ and the <a href="https://openai.com/codex/get-started/">Codex desktop app</a>. <a href="#setup-preview">See the setup first</a>.</p>
           <form class="start-form" data-start-form novalidate>
             <label class="eyebrow" for="linkedin">Your LinkedIn profile</label>
             <div class="input-row">
@@ -59,6 +63,22 @@
           <div class="proof-item">Login stays in your browser</div>
           <div class="proof-item">Submission always needs approval</div>
         </div>
+      </section>
+      <section class="shell setup-preview" id="setup-preview" aria-labelledby="setup-preview-title">
+        <div class="setup-preview-copy">
+          <p class="eyebrow">Before you install</p>
+          <h2 id="setup-preview-title">See the setup.</h2>
+          <p>Enter your LinkedIn URL, copy the command and run it in Terminal. Codex then opens a request to review and send.</p>
+          <p class="preview-scope" id="preview-scope">16-second tour of website screenshots. LinkedIn import and BizForward preparation are not shown.</p>
+        </div>
+        <figure class="setup-preview-media">
+          <video controls playsinline preload="none" poster="/launch/1cv-setup-poster.png" aria-label="1CV website setup preview" aria-describedby="preview-scope">
+            <source src="/launch/1cv-setup-tour.mp4" type="video/mp4" />
+            <track kind="captions" src="/launch/1cv-setup-tour.vtt" srclang="en" label="English" default />
+            <a href="/launch/1cv-setup-tour.mp4">Download the setup preview</a>.
+          </video>
+          <figcaption>Setup: enter your URL, copy the command, then continue in Codex. Your profile is reviewed before saving; final marketplace submission stays with you.</figcaption>
+        </figure>
       </section>
       <section class="shell steps" id="how-it-works">
         <h2 class="section-title">From profile<br />to prepared.</h2>
