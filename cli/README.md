@@ -23,14 +23,21 @@ During the public beta, start without cloning the repository:
 ```bash
 npx @danielsinewe/1cv start https://www.linkedin.com/in/your-profile
 npx @danielsinewe/1cv init
-npx @danielsinewe/1cv plan 9am
-npx @danielsinewe/1cv search 9am
+npx @danielsinewe/1cv --help
+npx @danielsinewe/1cv platforms
+# Continue only with an adapter and command listed by this executable.
 npx @danielsinewe/1cv plan bizforward
 npx @danielsinewe/1cv apply bizforward
 npx @danielsinewe/1cv status bizforward
 ```
 
 Or install it globally with `npm install -g @danielsinewe/1cv`.
+
+The published npm beta currently supports BizForward. This source also includes
+9am search preparation, which is pending npm release. A Codex plugin update does
+not upgrade an installed CLI. Check `--help` and `platforms` with the same
+executable before marketplace work; do not run source-only commands against a
+published CLI that does not list them.
 
 `start` installs or updates the 1CV plugin and opens a new Codex desktop task in `~/.1cv` with the LinkedIn request prefilled. Browser work continues in Codex's in-app browser.
 
