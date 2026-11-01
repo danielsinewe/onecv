@@ -23,8 +23,10 @@ function page({ clipboard, legacyCopy = () => false } = {}) {
   elements.get("copy-command").textContent = "Copy setup command";
   const selection = { removeAllRanges() {}, addRange() {} };
   const timers = [];
+  const tracked = [];
   vm.runInNewContext(source, {
     URL,
+    trackLaunchEvent: (name) => tracked.push(name),
     document: {
       querySelector: (query) => elements.get(query.slice(6, -1)),
       createRange: () => ({ selectNodeContents() {} }),
@@ -36,7 +38,7 @@ function page({ clipboard, legacyCopy = () => false } = {}) {
   const emit = (name, event) => listeners.get(`${name}:${event}`)?.({ preventDefault() {} });
   const input = (value) => { elements.get("linkedin-input").value = value; emit("linkedin-input", "input"); };
   const submit = (value) => { input(value); emit("start-form", "submit"); };
-  return { elements, emit, input, submit, timers };
+  return { elements, emit, input, submit, timers, tracked };
 }
 
 test("valid profile reveals a local command and editing invalidates the previous handoff", () => {
@@ -60,6 +62,7 @@ test("invalid profiles show validation and never retain a previous command", () 
   assert.equal(p.elements.get("command-output").textContent, "");
   assert.equal(p.elements.get("linkedin-input").getAttribute("aria-invalid"), "true");
   assert.match(p.elements.get("form-error").textContent, /LinkedIn profile URL/);
+  assert.deepEqual(p.tracked, ["onecv_command_generated"]);
 });
 
 test("clipboard success is acknowledged only after write resolves", async () => {
@@ -73,6 +76,7 @@ test("clipboard success is acknowledged only after write resolves", async () => 
   assert.match(written, /\/onecv-journey-a$/);
   assert.equal(p.elements.get("copy-command").disabled, false);
   assert.match(p.elements.get("copy-status").textContent, /Copied/);
+  assert.deepEqual(p.tracked, ["onecv_command_generated", "onecv_command_copied"]);
 });
 
 test("legacy clipboard success is supported when the modern API rejects", async () => {
@@ -91,6 +95,7 @@ test("unavailable clipboard offers honest manual recovery and retry", async () =
   assert.equal(p.elements.get("command-output").focused, true);
   assert.equal(p.elements.get("copy-command").disabled, false);
   assert.equal(p.elements.get("start-result").hidden, false);
+  assert.deepEqual(p.tracked, ["onecv_command_generated"]);
 });
 
 test("a late clipboard result cannot report success for an edited or regenerated command", async () => {
@@ -103,4 +108,5 @@ test("a late clipboard result cannot report success for an edited or regenerated
   assert.match(p.elements.get("command-output").textContent, /\/onecv-journey-b$/);
   assert.equal(p.elements.get("copy-status").textContent, "");
   assert.equal(p.elements.get("copy-command").textContent, "Copy setup command");
+  assert.deepEqual(p.tracked, ["onecv_command_generated", "onecv_command_generated"]);
 });
