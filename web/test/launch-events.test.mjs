@@ -44,6 +44,7 @@ test("privacy signals, QA and preview hosts suppress launch events", () => {
     { navigator: { doNotTrack: "1" } }, { navigator: { doNotTrack: "yes" } },
     { navigator: { globalPrivacyControl: true } },
     { search: "?onecv_qa=1" }, { search: "?launch_qa=1" },
+    { search: "?utm_source=github&utm_content=beta6_quickstart&onecv_qa=1" },
     { hostname: "localhost" }, { hostname: "onecv-preview.vercel.app" },
   ]) {
     const t = tracker(options);
@@ -58,4 +59,13 @@ test("unknown events and blocked analytics never interrupt setup", () => {
   assert.equal(t.track("onecv_setup_preview_completed"), true);
   const blocked = tracker({ fail: true });
   assert.equal(blocked.track("onecv_command_copied"), false);
+});
+
+
+test("GitHub release handoffs keep only the registered bounded labels", () => {
+  const t = tracker({ search: "?utm_source=github&utm_medium=release&utm_campaign=launch_2026_11&utm_content=beta6_quickstart&profile=private-profile&email=private@example.invalid" });
+  assert.equal(t.track("onecv_command_generated"), true);
+  assert.deepEqual(t.events, [["onecv_command_generated", {
+    launch_source: "github", launch_campaign: "launch_2026_11", launch_placement: "beta6_quickstart",
+  }]]);
 });
