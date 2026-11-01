@@ -1,3 +1,5 @@
+import { applicationScriptPath } from "./production-contract.mjs";
+
 const base = new URL(process.env.ONECV_PRODUCTION_URL ?? "https://1cv.app/");
 
 const routes = ["/", "/privacy/", "/terms/", "/imprint/", "/cookie-policy/"];
@@ -8,10 +10,7 @@ for (const route of routes) {
   if (!response.ok) throw new Error(`${url} returned ${response.status}.`);
 
   const html = await response.text();
-  if (!html.includes('href="/"')) throw new Error(`${url} has no route home.`);
-  if (html.includes("data-onefooter-root") || html.includes("/_next/static/")) {
-    throw new Error(`${url} is being served through the obsolete injected Next.js path.`);
-  }
+  const scriptPath = applicationScriptPath(html, url);
 
   const csp = response.headers.get("content-security-policy") ?? "";
   if (!csp.includes("script-src 'self'")) throw new Error(`${url} is missing the production CSP.`);
@@ -22,9 +21,11 @@ for (const route of routes) {
     throw new Error(`${url} has an unsafe script policy.`);
   }
 
-  const scriptPath = html.match(/<script[^>]+src=["']([^"']+\.js)["']/)?.[1];
-  if (!scriptPath) throw new Error(`${url} is missing the application script.`);
   const scriptResponse = await fetch(new URL(scriptPath, url));
+  if (!scriptResponse.ok) throw new Error(`${url} application module returned ${scriptResponse.status}.`);
+  if (!/javascript/i.test(scriptResponse.headers.get("content-type") ?? "")) {
+    throw new Error(`${url} application module is not served as JavaScript.`);
+  }
   const script = await scriptResponse.text();
   if (!script.includes("G-JCEGJ83QQN")) throw new Error(`${url} is missing the GA4 measurement ID.`);
 
