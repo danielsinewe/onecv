@@ -65,14 +65,14 @@ function addConsentControls() {
   document.querySelector(".setup-preview video")?.addEventListener("ended", () => {
     trackLaunchEvent("onecv_setup_preview_completed");
   });
-  const footerLinks = document.querySelector(".footer-links");
-  if (footerLinks && !footerLinks.querySelector("[data-analytics-settings]")) {
+  const settingsHost = document.querySelector("header.shell.nav");
+  if (settingsHost && !settingsHost.querySelector("[data-analytics-settings]")) {
     const settingsButton = document.createElement("button");
-    settingsButton.className = "footer-consent-button";
+    settingsButton.className = "nav-link footer-consent-button";
     settingsButton.type = "button";
     settingsButton.dataset.analyticsSettings = "";
     settingsButton.textContent = "Cookie settings";
-    footerLinks.append(settingsButton);
+    settingsHost.append(settingsButton);
   }
 
   const banner = document.createElement("section");
