@@ -2,8 +2,9 @@ const eventNames = new Set([
   "onecv_command_generated",
   "onecv_command_copied",
   "onecv_setup_preview_completed",
+  "onecv_setup_link_copied",
 ]);
-const placements = new Set(["1cv_launch", "1cv_profile_guide", "beta6_quickstart"]);
+const placements = new Set(["1cv_launch", "1cv_profile_guide", "beta6_quickstart", "1cv_setup_share"]);
 
 // Website handoff signals are not profile creation or CLI activation.
 export function createLaunchTracker({ getConsent, emit, location, navigator }) {
@@ -18,7 +19,7 @@ export function createLaunchTracker({ getConsent, emit, location, navigator }) {
       const source = query.get("utm_source");
       const content = query.get("utm_content");
       emit(name, {
-        launch_source: ["producthunt", "daniel_portfolio", "github"].includes(source) ? source : "other",
+        launch_source: ["producthunt", "daniel_portfolio", "github", "shared_walkthrough"].includes(source) ? source : "other",
         launch_campaign: query.get("utm_campaign") === "launch_2026_11" ? "launch_2026_11" : "other",
         launch_placement: placements.has(content) ? content : "other",
       });
