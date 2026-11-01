@@ -70,6 +70,16 @@
           <h2 id="setup-preview-title">See the setup.</h2>
           <p>Enter your LinkedIn URL, copy the command and run it in Terminal. Codex then opens a request to review and send.</p>
           <p class="preview-scope" id="preview-scope">Recorded website handoff with a fictional URL. LinkedIn import and BizForward preparation are not shown.</p>
+          <div class="setup-share">
+            <p>Know another freelancer using Codex? Share this public setup guide.</p>
+            <button class="setup-share-button" type="button" data-copy-setup-link>Copy public setup link</button>
+            <p class="preview-scope">No LinkedIn URL or local profile is included.</p>
+            <p class="preview-scope" data-setup-share-status role="status"></p>
+            <div class="setup-share-fallback" data-setup-share-fallback hidden>
+              <label for="public-setup-link">Public setup link</label>
+              <input id="public-setup-link" type="url" readonly data-public-setup-link />
+            </div>
+          </div>
         </div>
         <figure class="setup-preview-media">
           <video controls playsinline preload="none" poster="/launch/1cv-native-website-handoff.jpg" aria-label="1CV website setup preview" aria-describedby="preview-scope">

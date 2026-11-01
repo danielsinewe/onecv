@@ -69,3 +69,23 @@ test("GitHub release handoffs keep only the registered bounded labels", () => {
     launch_source: "github", launch_campaign: "launch_2026_11", launch_placement: "beta6_quickstart",
   }]]);
 });
+
+test("shared setup handoffs preserve fixed labels without exporting incoming private values", () => {
+  const t = tracker({ search: "?utm_source=shared_walkthrough&utm_medium=referral&utm_campaign=launch_2026_11&utm_content=1cv_setup_share&linkedin=private-profile&email=private@example.invalid" });
+  assert.equal(t.track("onecv_command_generated"), true);
+  assert.equal(t.track("onecv_setup_link_copied"), true);
+  assert.equal(t.track("onecv_setup_link_copied"), false);
+  assert.deepEqual(t.events.map(([name, labels]) => ({ name, labels })), [
+    { name: "onecv_command_generated", labels: { launch_source: "shared_walkthrough", launch_campaign: "launch_2026_11", launch_placement: "1cv_setup_share" } },
+    { name: "onecv_setup_link_copied", labels: { launch_source: "shared_walkthrough", launch_campaign: "launch_2026_11", launch_placement: "1cv_setup_share" } },
+  ]);
+  for (const options of [
+    { consent: null }, { consent: "denied" }, { navigator: { doNotTrack: "1" } },
+    { navigator: { globalPrivacyControl: true } }, { search: "?onecv_qa=1" },
+    { search: "?launch_qa=1" }, { hostname: "localhost" },
+  ]) {
+    const blocked = tracker(options);
+    assert.equal(blocked.track("onecv_setup_link_copied"), false);
+    assert.deepEqual(blocked.events, []);
+  }
+});

@@ -2,6 +2,7 @@ import "@fontsource-variable/manrope";
 import "@fontsource-variable/newsreader";
 import "./styles.css";
 import { trackLaunchEvent } from "./analytics.js";
+import { mountSetupShare } from "./setup-share.js";
 
 const form = document.querySelector("[data-start-form]");
 const input = document.querySelector("[data-linkedin-input]");
@@ -108,3 +109,4 @@ form?.addEventListener("submit", (event) => {
 });
 
 copyButton?.addEventListener("click", copyCommand);
+mountSetupShare({ document, navigator, trackLaunchEvent });

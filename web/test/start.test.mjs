@@ -27,6 +27,7 @@ function page({ clipboard, legacyCopy = () => false } = {}) {
   vm.runInNewContext(source, {
     URL,
     trackLaunchEvent: (name) => tracked.push(name),
+    mountSetupShare() {},
     document: {
       querySelector: (query) => elements.get(query.slice(6, -1)),
       createRange: () => ({ selectNodeContents() {} }),
