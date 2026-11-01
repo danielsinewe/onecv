@@ -1,7 +1,7 @@
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/newsreader";
 import "./styles.css";
-import "./analytics.js";
+import { trackLaunchEvent } from "./analytics.js";
 
 const form = document.querySelector("[data-start-form]");
 const input = document.querySelector("[data-linkedin-input]");
@@ -72,6 +72,7 @@ async function copyCommand() {
     return;
   }
   copyStatus.textContent = "Copied — paste in Terminal.";
+  trackLaunchEvent("onecv_command_copied");
   copyButton.textContent = "Copied — paste in Terminal";
   copyTimer = window.setTimeout(() => {
     if (version === commandVersion) copyButton.textContent = "Copy setup command";
@@ -103,6 +104,7 @@ form?.addEventListener("submit", (event) => {
   result.hidden = false;
   result.scrollIntoView({ behavior: "smooth", block: "nearest" });
   copyButton.focus({ preventScroll: true });
+  trackLaunchEvent("onecv_command_generated");
 });
 
 copyButton?.addEventListener("click", copyCommand);

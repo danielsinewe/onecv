@@ -1,6 +1,16 @@
+import { createLaunchTracker } from "./launch-events.js";
+
 const measurementId = "G-JCEGJ83QQN";
 const consentStorageKey = "onecv_google_analytics_consent";
 const validChoices = new Set(["granted", "denied"]);
+let currentConsent = null;
+
+export const trackLaunchEvent = createLaunchTracker({
+  getConsent: () => currentConsent,
+  emit: (name, parameters) => window.gtag("event", name, parameters),
+  location: window.location,
+  navigator: window.navigator,
+});
 
 window.dataLayer = window.dataLayer || [];
 window.gtag = window.gtag || function gtag() {
@@ -25,6 +35,7 @@ function storedConsent() {
 }
 
 function updateConsent(choice) {
+  currentConsent = choice;
   window.gtag("consent", "update", {
     analytics_storage: choice,
     ad_storage: "denied",
@@ -51,6 +62,9 @@ window.gtag("js", new Date());
 window.gtag("config", measurementId);
 
 function addConsentControls() {
+  document.querySelector(".setup-preview video")?.addEventListener("ended", () => {
+    trackLaunchEvent("onecv_setup_preview_completed");
+  });
   const footerLinks = document.querySelector(".footer-links");
   if (footerLinks && !footerLinks.querySelector("[data-analytics-settings]")) {
     const settingsButton = document.createElement("button");
