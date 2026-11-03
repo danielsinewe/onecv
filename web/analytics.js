@@ -1,4 +1,7 @@
 import { createLaunchTracker } from "./launch-events.js";
+import { createPublicAhrefs } from "./public-ahrefs.js";
+
+const ahrefs = createPublicAhrefs(window);
 
 const measurementId = "G-JCEGJ83QQN";
 const consentStorageKey = "onecv_google_analytics_consent";
@@ -51,6 +54,7 @@ function updateConsent(choice) {
 }
 
 const initialConsent = storedConsent();
+const initialAhrefsConsent = ahrefs.choice();
 if (initialConsent) updateConsent(initialConsent);
 
 const tag = document.createElement("script");
@@ -62,6 +66,8 @@ window.gtag("js", new Date());
 window.gtag("config", measurementId);
 
 function addConsentControls() {
+  ahrefs.sync();
+  let nativeChoiceOnly = Boolean(initialConsent) && !initialAhrefsConsent;
   document.querySelector(".setup-preview video")?.addEventListener("ended", () => {
     trackLaunchEvent("onecv_setup_preview_completed");
   });
@@ -84,7 +90,7 @@ function addConsentControls() {
   banner.innerHTML = `
     <div>
       <strong>Optional analytics</strong>
-      <p>Allow anonymous Google Analytics to help improve 1CV. Advertising stays off.</p>
+      <p>${nativeChoiceOnly ? "Allow optional Ahrefs public-page analytics? Your Google Analytics choice is kept. CV fields and setup commands are not shared with Ahrefs." : "Allow optional Google Analytics and Ahrefs to help improve 1CV? Ahrefs receives public page paths, never CV fields or setup commands. Advertising stays off."}</p>
       <a href="/cookie-policy/">Cookie policy</a>
     </div>
     <div class="analytics-consent-actions">
@@ -93,7 +99,11 @@ function addConsentControls() {
     </div>`;
   document.body.append(banner);
 
-  const openBanner = () => { banner.hidden = false; };
+  const openBanner = () => {
+    nativeChoiceOnly = false;
+    banner.querySelector("p").textContent = "Allow optional Google Analytics and Ahrefs to help improve 1CV? Ahrefs receives public page paths, never CV fields or setup commands. Advertising stays off.";
+    banner.hidden = false;
+  };
   const closeBanner = () => { banner.hidden = true; };
 
   document.querySelectorAll("[data-analytics-settings]").forEach((button) => {
@@ -102,12 +112,14 @@ function addConsentControls() {
 
   banner.querySelectorAll("[data-consent-choice]").forEach((button) => {
     button.addEventListener("click", () => {
-      updateConsent(button.dataset.consentChoice);
+      if (!nativeChoiceOnly) updateConsent(button.dataset.consentChoice);
+      ahrefs.setChoice(button.dataset.consentChoice);
+      nativeChoiceOnly = false;
       closeBanner();
     });
   });
 
-  if (initialConsent) closeBanner();
+  if (initialConsent && initialAhrefsConsent) closeBanner();
 }
 
 if (document.readyState === "loading") {
