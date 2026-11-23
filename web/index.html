@@ -6,6 +6,8 @@
     <meta name="trustpilot-one-time-domain-verification-id" content="f8110451-c6f8-4ad4-8204-9e12c9b36f8c" />
     <title>1CV — Your local freelance profile for BizForward</title>
     <meta name="description" content="Review your LinkedIn profile in Codex, keep one local CV, and prepare BizForward intake. Requires Node.js 20+ and the Codex desktop app." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://1cv.app/" />
     <meta property="og:title" content="1CV — One local profile. Prepare BizForward." />
     <meta property="og:description" content="Start with LinkedIn, review your local profile, and prepare BizForward intake. Final submission stays with you." />
     <meta property="og:image" content="https://1cv.app/launch/1cv-setup-poster.png" />
@@ -14,6 +16,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href="https://1cv.app/" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"1CV","url":"https://1cv.app/","logo":"https://1cv.app/icon.svg"}</script>
   </head>
   <body>
     <header class="shell nav">
@@ -26,7 +29,7 @@
           <p class="eyebrow">Local-first freelancer profile</p>
           <h1>Paste LinkedIn.<br />Leave with one CV.</h1>
           <p class="lede">Create one reusable profile. Prepare BizForward intake. Nothing is submitted automatically.</p>
-          <p class="setup-requirements">Free, open-source CLI. Requires Node.js 20+ and the <a href="https://openai.com/codex/get-started/">Codex desktop app</a>. Live form filling opens Google Chrome by default. <a href="#setup-preview">See the setup first</a>.</p>
+          <p class="setup-requirements">Free, open-source CLI. Requires Node.js 20+ and the <a href="https://openai.com/codex/">Codex desktop app</a>. Live form filling opens Google Chrome by default. <a href="#setup-preview">See the setup first</a>.</p>
           <form class="start-form" data-start-form novalidate>
             <label class="eyebrow" for="linkedin">Your LinkedIn profile</label>
             <div class="input-row">
@@ -41,7 +44,7 @@
             <code class="command" data-command-output tabindex="0"></code>
             <div class="result-actions">
               <button class="copy-button" type="button" data-copy-command>Copy setup command</button>
-              <a class="text-link" href="https://openai.com/codex/get-started/">Need the Codex app?</a>
+              <a class="text-link" href="https://openai.com/codex/">Need the Codex app?</a>
             </div>
             <p class="privacy-note" data-copy-status role="status"></p>
           </div>
